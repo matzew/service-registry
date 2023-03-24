@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"io"
 	"net/http"
 	"strings"
 
@@ -32,157 +33,12 @@ type Attribute struct {
 	Value    interface{} `json:"value,omitempty"`
 }
 
-var groups = []Group{
-	{
-		ID:      "apiserversources.sources.knative.dev",
-		Version: 1,
-		Definitions: []Definition{
-			{
-				ID:          "dev.knative.apiserver.resource.add",
-				Version:     133179207676972370,
-				Description: "ApiServerSource CloudEvent type for adds",
-				Format:      "CloudEvents/1.0",
-				Metadata: Metadata{
-					Attributes: map[string]Attribute{
-						"datacontenttype": {
-							Required: true,
-							Value:    "application/json",
-						},
-						"my-add-extension": {
-							Required: false,
-						},
-						"dataschema": {
-							Required: true,
-							Value:    "https://k8s.io/some/schema.json",
-						},
-						"id": {
-							Required: true,
-						},
-						"source": {
-							Required: false,
-							Value:    "https://10.96.0.1:443",
-						},
-						"time": {
-							Required: true,
-						},
-						"type": {
-							Required: true,
-							Value:    "dev.knative.apiserver.resource.add",
-						},
-					},
-				},
-			},
-			{
-				ID:          "dev.knative.apiserver.resource.update",
-				Version:     133179207676972370,
-				Description: "ApiServerSource CloudEvent type for updates",
-				Format:      "CloudEvents/1.0",
-				Metadata: Metadata{
-					Attributes: map[string]Attribute{
-						"datacontenttype": {
-							Required: true,
-							Value:    "application/json",
-						},
-						"my-update-extension": {
-							Required: false,
-						},
-						"dataschema": {
-							Required: true,
-							Value:    "https://k8s.io/some/schema.json",
-						},
-						"id": {
-							Required: true,
-						},
-						"source": {
-							Required: false,
-							Value:    "https://10.96.0.1:443",
-						},
-						"time": {
-							Required: true,
-						},
-						"type": {
-							Required: true,
-							Value:    "dev.knative.apiserver.resource.update",
-						},
-					},
-				},
-			},
-			{
-				ID:          "dev.knative.apiserver.resource.delete",
-				Version:     133179207676972370,
-				Description: "ApiServerSource CloudEvent type for deletions",
-				Format:      "CloudEvents/1.0",
-				Metadata: Metadata{
-					Attributes: map[string]Attribute{
-						"datacontenttype": {
-							Required: true,
-							Value:    "application/json",
-						},
-						"my-delete-extension": {
-							Required: false,
-						},
-						"dataschema": {
-							Required: true,
-							Value:    "https://k8s.io/some/schema.json",
-						},
-						"id": {
-							Required: true,
-						},
-						"source": {
-							Required: false,
-							Value:    "https://10.96.0.1:443",
-						},
-						"time": {
-							Required: true,
-						},
-						"type": {
-							Required: true,
-							Value:    "dev.knative.apiserver.resource.delete",
-						},
-					},
-				},
-			},
-		},
-	},
-	{
-		ID:      "pingsources.sources.knative.dev",
-		Version: 1,
-		Definitions: []Definition{
-			{
-				ID:          "dev.knative.sources.ping",
-				Version:     133179207676972370,
-				Description: "The default PingSource CloudEvent type",
-				Format:      "CloudEvents/1.0",
-				Metadata: Metadata{
-					Attributes: map[string]Attribute{
-						"datacontenttype": {
-							Required: true,
-							Value:    "application/json",
-						},
-						"dataschema": {
-							Required: false,
-							Value:    "https://k8s.io/some/schema.json",
-						},
-						"id": {
-							Required: true,
-						},
-						"source": {
-							Required: false,
-							Value:    "/apis/v1/namespaces/default/pingsources/test-ping-source",
-						},
-						"time": {
-							Required: true,
-						},
-						"type": {
-							Required: true,
-							Value:    "dev.knative.sources.ping",
-						},
-					},
-				},
-			},
-		},
-	},
+var federatedUrls = []string{
+	"https://raw.githubusercontent.com/matzew/service-registry/main/wa_sample_group.json",
+	"https://raw.githubusercontent.com/matzew/service-registry/main/telegram_sample_group.json",
 }
+
+var groups = []Group{}
 
 func groupsHandler(w http.ResponseWriter, r *http.Request) {
 
@@ -224,72 +80,6 @@ func groupByIDHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(foundGroup)
-}
-
-func groupDefinitionsHandler(w http.ResponseWriter, r *http.Request) {
-	if !strings.HasSuffix(r.URL.Path, "/definitions") {
-		http.NotFound(w, r)
-		return
-	}
-
-	if r.Method != http.MethodGet {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
-	groupID := strings.TrimPrefix(r.URL.Path, "/groups/")
-	groupID = strings.TrimSuffix(groupID, "/definitions")
-	var foundGroup *Group
-	for _, group := range groups {
-		if group.ID == groupID {
-			foundGroup = &group
-			break
-		}
-	}
-
-	if foundGroup == nil {
-		http.Error(w, "Group not found", http.StatusNotFound)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(foundGroup.Definitions)
-}
-
-func groupDefinitionByIDHandler(w http.ResponseWriter, r *http.Request) {
-	pathParts := strings.Split(strings.TrimPrefix(r.URL.Path, "/groups/"), "/")
-	if len(pathParts) != 3 || pathParts[1] != "definitions" {
-		http.NotFound(w, r)
-		return
-	}
-
-	if r.Method != http.MethodGet {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
-	groupID := pathParts[0]
-	defID := pathParts[2]
-	var foundDefinition *Definition
-
-	for _, group := range groups {
-		if group.ID == groupID {
-			for _, definition := range group.Definitions {
-				if definition.ID == defID {
-					foundDefinition = &definition
-					break
-				}
-			}
-		}
-	}
-
-	if foundDefinition == nil {
-		http.Error(w, "Definition not found", http.StatusNotFound)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(foundDefinition)
 }
 
 func addGroupHandler(w http.ResponseWriter, r *http.Request) {
@@ -369,7 +159,36 @@ func addGroupCloudEventHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func parseTargetEventTypes() {
+	for _, url := range federatedUrls {
+		registerGroup(url)
+	}
+}
+
+func registerGroup(url string) {
+	resp, err := http.Get(url)
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		panic(err)
+	}
+
+	var group Group
+	err = json.Unmarshal(body, &group)
+	if err != nil {
+		panic(err)
+	}
+
+	groups = append(groups, group)
+}
+
 func main() {
+
+	parseTargetEventTypes()
 
 	m := http.NewServeMux()
 
@@ -377,7 +196,5 @@ func main() {
 	m.HandleFunc("/groups/", groupByIDHandler)
 	m.HandleFunc("/", addGroupCloudEventHandler)
 
-	//http.HandleFunc("/groups/", groupDefinitionsHandler)
-	//http.HandleFunc("/groups/", groupDefinitionByIDHandler)
 	http.ListenAndServe(":8080", m)
 }
