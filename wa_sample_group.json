@@ -1,4 +1,4 @@
-{
+[{
   "id": "whatsapp.com",
   "version": 1,
   "definitions": [
@@ -68,4 +68,4 @@
     }
   ]
 }
-
+]

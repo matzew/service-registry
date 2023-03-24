@@ -1,4 +1,4 @@
-{
+[{
   "id": "telegram.org",
   "version": 1,
   "definitions": [
@@ -67,5 +67,4 @@
       }
     }
   ]
-}
-
+}]
