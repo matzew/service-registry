@@ -1,0 +1,71 @@
+{
+  "id": "whatsapp.com",
+  "version": 1,
+  "definitions": [
+    {
+      "id": "com.whatsapp.message.text.add",
+      "version": 133179207676972370,
+      "description": "New Text message",
+      "format": "CloudEvents/1.0",
+      "metadata": {
+        "attributes": {
+          "datacontenttype": {
+            "required": true,
+            "value": "application/json"
+          },
+          "dataschema": {
+            "required": true,
+            "value": "https://whatsapp.com/some/schema.json"
+          },
+          "id": {
+            "required": true
+          },
+          "source": {
+            "required": false,
+            "value": "https://whatsapp.com"
+          },
+          "time": {
+            "required": true
+          },
+          "type": {
+            "required": true,
+            "value": "com.whatsapp.message.text.add"
+          }
+        }
+      }
+    },
+    {
+      "id": "com.whatsapp.message.text.del",
+      "version": 133179207676972370,
+      "description": "Text message removed",
+      "format": "CloudEvents/1.0",
+      "metadata": {
+        "attributes": {
+          "datacontenttype": {
+            "required": true,
+            "value": "application/json"
+          },
+          "dataschema": {
+            "required": true,
+            "value": "https://whatsapp.com/some/schema.json"
+          },
+          "id": {
+            "required": true
+          },
+          "source": {
+            "required": false,
+            "value": "https://whatsapp.com"
+          },
+          "time": {
+            "required": true
+          },
+          "type": {
+            "required": true,
+            "value": "com.whatsapp.message.text.del"
+          }
+        }
+      }
+    }
+  ]
+}
+

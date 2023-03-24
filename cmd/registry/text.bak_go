@@ -1,0 +1,193 @@
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"net/http"
+
+	"github.com/gorilla/mux"
+)
+
+// EventType represents an event type definition.
+type EventType struct {
+	Name           string `json:"name"`
+	DataContentType string `json:"dataContentType"`
+	SourceTemplate string `json:"sourceTemplate,omitempty"`
+}
+
+// Service represents a schema discovery service.
+type Service struct {
+	Name           string      `json:"name"`
+	SubscriptionURI string      `json:"subscriptionUri,omitempty"`
+	Protocols      []string    `json:"protocols"`
+	EventTypes     []EventType `json:"eventTypes"`
+}
+
+// ServiceList represents a list of schema discovery services.
+type ServiceList struct {
+	Services []Service `json:"services"`
+}
+
+var services = []Service{
+	{
+		Name:           "exampleservice1",
+		SubscriptionURI: "https://example.com/subscription",
+		Protocols:      []string{"HTTP"},
+		EventTypes: []EventType{
+			{
+				Name:           "example.event.type.1",
+				DataContentType: "application/json",
+				SourceTemplate:  "/example/{id}",
+			},
+			{
+				Name:           "example.event.type.2",
+				DataContentType: "application/xml",
+			},
+		},
+	},
+	{
+		Name:           "exampleservice2",
+		Protocols:      []string{"AMQP"},
+		EventTypes: []EventType{
+			{
+				Name:           "example.event.type.1",
+				DataContentType: "application/json",
+				SourceTemplate:  "/example/{id}",
+			},
+		},
+	},
+}
+
+func getAllServicesHandler(w http.ResponseWriter, r *http.Request) {
+	serviceList := ServiceList{Services: services}
+	serviceListJSON, err := json.MarshalIndent(serviceList, "", "  ")
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "Error generating service list JSON: %v", err)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(serviceListJSON)
+}
+
+func getServiceByIdHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	serviceId := vars["id"]
+
+	var service Service
+	found := false
+	for _, s := range services {
+		if s.Name == serviceId {
+			service = s
+			found = true
+			break
+		}
+	}
+
+	if !found {
+		w.WriteHeader(http.StatusNotFound)
+		fmt.Fprintf(w, "Service with id %s not found", serviceId)
+		return
+	}
+
+	serviceJSON, err := json.MarshalIndent(service, "", "  ")
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "Error generating service JSON: %v", err)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(serviceJSON)
+}
+
+func main() {
+	r := mux.NewRouter()
+
+	r.HandleFunc("/services", getAllServicesHandler).Methods("GET")
+	r.HandleFunc("/services/{id}", getServiceByIdHandler).Methods("GET")
+
+	http.ListenAndServe(":8080", r)
+}
+
+
+
+
+
+
+// package main
+
+// import (
+// 	"encoding/json"
+// 	"net/http"
+// )
+
+// // EventType represents an event type definition.
+// type EventType struct {
+// 	Name           string `json:"name"`
+// 	DataContentType string `json:"dataContentType"`
+// 	SourceTemplate string `json:"sourceTemplate,omitempty"`
+// }
+
+// // Service represents a schema discovery service.
+// type Service struct {
+// 	Name           string      `json:"name"`
+// 	SubscriptionURI string      `json:"subscriptionUri,omitempty"`
+// 	Protocols      []string    `json:"protocols"`
+// 	EventTypes     []EventType `json:"eventTypes"`
+// }
+
+// // ServiceList represents a list of schema discovery services.
+// type ServiceList struct {
+// 	Services []Service `json:"services"`
+// }
+
+// // services represents a list of example schema discovery services
+// var services = []*Service{
+// 	{
+// 		Name:            "Example Service 1",
+// 		SubscriptionURI: "https://example.com/subscriptions",
+// 		Protocols:       []string{"HTTP", "AMQP"},
+// 		EventTypes: []*EventType{
+// 			{
+// 				Name:           "com.example.event1",
+// 				DataContentType: "application/json",
+// 				SourceTemplate: "https://example.com/event1/source",
+// 			},
+// 			{
+// 				Name:           "com.example.event2",
+// 				DataContentType: "application/xml",
+// 				SourceTemplate: "https://example.com/event2/source",
+// 			},
+// 		},
+// 	},
+// 	{
+// 		Name:            "Example Service 2",
+// 		SubscriptionURI: "https://example.org/subscriptions",
+// 		Protocols:       []string{"HTTP"},
+// 		EventTypes: []*EventType{
+// 			{
+// 				Name:           "com.example.event3",
+// 				DataContentType: "text/plain",
+// 				SourceTemplate: "https://example.org/event3/source",
+// 			},
+// 		},
+// 	},
+// }
+
+// // getServicesHandler returns a list of schema discovery services
+// func getServicesHandler(w http.ResponseWriter, r *http.Request) {
+// 	jsonBytes, err := json.Marshal(services)
+// 	if err != nil {
+// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+// 		return
+// 	}
+// 	w.Header().Set("Content-Type", "application/json")
+// 	w.Write(jsonBytes)
+// }
+
+// func main() {
+// 	http.HandleFunc("/services", getServicesHandler)
+// 	http.ListenAndServe(":8080", nil)
+// }
