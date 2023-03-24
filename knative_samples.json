@@ -1,4 +1,4 @@
-{
+[{
     "id": "apiserversources.sources.knative.dev",
     "version": 1,
     "definitions": [
@@ -150,4 +150,4 @@
         }
     }
     ]
-}
+}]
