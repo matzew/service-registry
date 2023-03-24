@@ -1,0 +1,40 @@
+{
+    "id": "pingsources.sources.knative.dev",
+    "format": "CloudEvents/1.0",
+    "version": 1,
+    "definitions": {
+        "dev.knative.sources.ping": {
+            "id": "dev.knative.sources.ping",
+            "version": 133179207676972370,
+            "description": "The default PingSource CloudEvent type",
+            "schemaUrl": "",
+            "format": "CloudEvents/1.0",
+            "metadata": {
+                "attributes": {
+                    "datacontenttype": {
+                        "required": true,
+                        "value": "application/json"
+                    },
+                    "dataschema": {
+                        "required": false,
+                        "value": "https://k8s.io/some/schema.json"
+                    },
+                    "id": {
+                        "required": true
+                    },
+                    "source": {
+                        "required": false,
+                        "value": "/apis/v1/namespaces/default/pingsources/test-ping-source"
+                    },
+                    "time": {
+                        "required": true
+                    },
+                    "type": {
+                        "required": true,
+                        "value": "dev.knative.sources.ping"
+                    }
+                }
+            }
+        }
+    }
+}

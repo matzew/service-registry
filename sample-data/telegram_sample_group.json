@@ -1,8 +1,9 @@
-[{
+{
   "id": "telegram.org",
   "version": 1,
-  "definitions": [
-    {
+  "format": "CloudEvents/1.0",
+  "definitions": {
+    "org.telegram.message.text.add": {
       "id": "org.telegram.message.text.add",
       "version": 133179207676972370,
       "description": "New Text message",
@@ -34,10 +35,10 @@
         }
       }
     },
-    {
+    "org.telegram.message.text.del": {
       "id": "org.telegram.message.text.del",
       "version": 133179207676972370,
-      "description": "Text message removed",
+      "description": "New Text message",
       "format": "CloudEvents/1.0",
       "metadata": {
         "attributes": {
@@ -66,5 +67,5 @@
         }
       }
     }
-  ]
-}]
+  }
+}

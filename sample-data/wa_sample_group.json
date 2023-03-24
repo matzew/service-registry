@@ -1,8 +1,9 @@
-[{
+{
   "id": "whatsapp.com",
   "version": 1,
-  "definitions": [
-    {
+  "format": "CloudEvents/1.0",
+  "definitions": {
+    "com.whatsapp.message.text.add": {
       "id": "com.whatsapp.message.text.add",
       "version": 133179207676972370,
       "description": "New Text message",
@@ -34,10 +35,10 @@
         }
       }
     },
-    {
+    "com.whatsapp.message.text.del": {
       "id": "com.whatsapp.message.text.del",
       "version": 133179207676972370,
-      "description": "Text message removed",
+      "description": "New Text message",
       "format": "CloudEvents/1.0",
       "metadata": {
         "attributes": {
@@ -66,6 +67,5 @@
         }
       }
     }
-  ]
+  }
 }
-]
