@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/matzew/service-registry/pkg/endpoint"
 	"github.com/matzew/service-registry/pkg/registry"
 	"net/http"
 )
@@ -26,6 +27,8 @@ func main() {
 
 	m.HandleFunc("/groups", registry.GroupsHandler)
 	m.HandleFunc("/groups/", registry.GroupByIDHandler)
+
+	m.HandleFunc("/endpoints", endpoint.EndpointsHandler)
 
 	http.ListenAndServe(":8080", m)
 }
