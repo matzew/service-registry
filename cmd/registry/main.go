@@ -8,7 +8,7 @@ import (
 
 // TODO: read from configmap
 var federatedUrls = []string{
-	// Clement's sample data
+	// Clemens' sample data
 	"https://cediscoveryinterop.azurewebsites.net/registry/definitiongroups/microsoft.eventgrid?code=VyRba-8O1MYZ6EPVoV34u3RSpZXqnlaefnVTsxT7p0BLAzFuCziSzw==",
 	"https://cediscoveryinterop.azurewebsites.net/registry/definitiongroups/microsoft.eventhub?code=VyRba-8O1MYZ6EPVoV34u3RSpZXqnlaefnVTsxT7p0BLAzFuCziSzw==",
 
