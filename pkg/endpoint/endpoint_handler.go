@@ -25,7 +25,7 @@ var endpoints = []Endpoint{
 		DefinitionGroup: []string{"myserver/definitionGroups/my.custom.eventdef.grp"},
 	},
 	{
-		ID:    "kafka.mytopic-consumer",
+		ID:    "amq-streams.something.mytopic-consumer",
 		Usage: "consumer",
 		Config: EndpointConfig{
 			Protocol: "Kafka/3.4",

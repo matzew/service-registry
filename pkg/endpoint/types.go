@@ -8,14 +8,14 @@ type EndpointConfig struct {
 }
 
 type Endpoint struct {
-	Format          string         `json:"format"`
-	AuthScope       string         `json:"authscope"`
+	ID              string         `json:"id"`
+	Usage           string         `json:"usage"`
 	Config          EndpointConfig `json:"config"`
+	Channel         string         `json:"channel"`
 	DefinitionGroup []string       `json:"definitionGroups"`
 	Description     string         `json:"description"`
-	ID              string         `json:"id"`
 	Name            string         `json:"name"`
-	Usage           string         `json:"usage"`
-	Channel         string         `json:"channel"`
 	Version         int64          `json:"version"`
+	Format          string         `json:"format"`
+	AuthScope       string         `json:"authscope"`
 }
